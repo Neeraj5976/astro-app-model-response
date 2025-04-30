@@ -1,0 +1,128 @@
+// /src/components/BlogCard.astro
+---
+const { post } = Astro.props;
+const formattedDate = new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<div class="blog-card">
+<div class="blog-card-header">
+<img src={post.image} alt={post.title} class="blog-card-image">
+<h2 class="blog-card-title">{post.title}</h2>
+</div>
+<div class="blog-card-content">
+<p class="blog-card-description">{post.description}</p>
+<div class="blog-card-meta">
+<span class="blog-card-date">{formattedDate}</span>
+<span class="blog-card-author">by {post.author}</span>
+</div>
+<button class="blog-card-toggle">Read More</button>
+<div class="blog-card-full-content">
+<slot />
+</div>
+</div>
+</div>
+
+<style>
+.blog-card {
+background-color: white;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+margin-bottom: 1rem;
+padding: 1rem;
+transition: all 0.3s ease;
+}
+
+.blog-card-header {
+margin-bottom: 1rem;
+}
+
+.blog-card-image {
+width: 100%;
+height: 200px;
+object-fit: cover;
+border-radius: 4px;
+}
+
+.blog-card-title {
+font-size: 1.5rem;
+color: #333;
+margin: 1rem 0;
+line-height: 1.3;
+}
+
+.blog-card-content {
+max-height: 100px; /* Initial collapsed height */
+overflow: hidden;
+transition: max-height 0.3s ease;
+}
+
+.blog-card.expanded .blog-card-content {
+max-height: 1000px; /* Adjust as needed for longer content */
+}
+
+.blog-card-description {
+color: #666;
+line-height: 1.6;
+margin-bottom: 1rem;
+}
+
+.blog-card-meta {
+display: flex;
+gap: 1rem;
+color: #888;
+font-size: 0.9rem;
+margin-bottom: 1rem;
+}
+
+.blog-card-toggle {
+background-color: #007bff;
+color: white;
+border: none;
+padding: 0.5rem 1rem;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+
+.blog-card-toggle:hover {
+background-color: #0056b3;
+}
+
+.blog-card-full-content {
+margin-top: 1rem;
+}
+
+.blog-card.expanded .blog-card-toggle {
+background-color: #6c757d;
+}
+
+.blog-card.expanded .blog-card-toggle:hover {
+background-color: #545b62;
+}
+</style>
+
+<script>
+const blogCards = document.querySelectorAll('.blog-card');
+
+blogCards.forEach(card => {
+const toggleButton = card.querySelector('.blog-card-toggle');
+const content = card.querySelector('.blog-card-content');
+const fullContent = card.querySelector('.blog-card-full-content');
+const initialContentHeight = content?.offsetHeight + 'px';
+
+if (content && fullContent) {
+content.style.maxHeight = initialContentHeight; // Set initial height for transition
+
+toggleButton?.addEventListener('click', () => {
+card.classList.toggle('expanded');
+if (card.classList.contains('expanded')) {
+toggleButton.textContent = 'Read Less';
+content.style.maxHeight = content.scrollHeight + fullContent.scrollHeight + 'px';
+} else {
+toggleButton.textContent = 'Read More';
+content.style.maxHeight = initialContentHeight;
+}
+});
+}
+});
+</script>
